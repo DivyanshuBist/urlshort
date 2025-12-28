@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  eureka-service:
+    image: eureka-server.jar
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - app-network
+
+  gateway-service:
+    image: gateway-service.jar
+    container_name: gateway-service
+    ports:
+      - "9090:8081"
+    depends_on:
+      - eureka-service
+    networks:
+      - app-network
+
+  url-service:
+    image: url-service.jar
+    container_name: url-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-service
+      - gateway-service
+      - DB
+    # environment:
+    #   SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3307/urlshortner
+    networks:
+      - app-network
+
+  
+  DB:
+    image: mysql:8.0.43
+    container_name: mysqldb
+    restart: always
+    ports: 
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+    environment:
+      MYSQL_DATABASE: urlshortner
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: admin
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
