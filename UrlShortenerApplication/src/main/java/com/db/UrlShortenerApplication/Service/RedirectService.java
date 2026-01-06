@@ -17,22 +17,25 @@ public class RedirectService {
 
     private UrlRecordRepository repository;
 
+    private RedisService redisService;
+
     public RedirectResponseWrapper getLongUrlfromUrl(String shorturl){
-        Optional<String> cached=CheckCacheData(shorturl);
-        if(cached.isPresent()){
-            return new RedirectResponseWrapper(cached.get(),"HIT");
+        String cached=CheckCacheData(shorturl);
+        if(cached!=null){
+            return new RedirectResponseWrapper(cached,"HIT");
         }
 
         Optional<String> dbcheck=CheckDatabase(shorturl);
         if(dbcheck.isPresent()){
+            redisService.set(shorturl, dbcheck.get());
             return new RedirectResponseWrapper(dbcheck.get(),"MISS");
         }
 
        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Short URL not found");
     }
 
-    private Optional<String> CheckCacheData(String shortstr){
-        return Optional.empty();
+    private String CheckCacheData(String shortstr){
+        return redisService.get(shortstr);
     }
 
     private Optional<String> CheckDatabase(String shortstr){

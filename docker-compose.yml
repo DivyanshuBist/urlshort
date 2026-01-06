@@ -28,6 +28,7 @@ services:
       - eureka-service
       - gateway-service
       - DB
+      - redis
     # environment:
     #   SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3307/urlshortner
     networks:
@@ -48,7 +49,16 @@ services:
       MYSQL_DATABASE: urlshortner
       MYSQL_PASSWORD: admin
       MYSQL_ROOT_PASSWORD: admin
-
+  
+  redis:
+    image: redis:8.4.0-alpine
+    container_name: redisdb
+    ports:
+      - "6379:6379"
+    restart: always
+    networks:
+      - app-network
+  
 networks:
   app-network:
     driver: bridge
