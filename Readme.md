@@ -16,6 +16,16 @@
 - /redirect?param=shorturl
     - `/redirect?param=shorturl`
 
+## How to Run
+- generate Jar 
+	open individual service and run mvn clean package to create jar file
+
+- Build Docker Image
+	open individual service and run
+	docker build -t url-service .
+
+- Docker compose up
+
 ## To-Do
-- Implement Cache
+- Implement Cache (done)
 - Testing
